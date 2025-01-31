@@ -22,7 +22,8 @@ import modelscope_studio as mgr
 # For Nvidia GPUs.
 # python chatbot_web_demo_o2.6.py
 
-
+# 指定缓存路径
+cache_dir = r"F:\ai_wk\models"
 # Argparser
 parser = argparse.ArgumentParser(description='demo')
 parser.add_argument('--model', type=str , default="openbmb/MiniCPM-o-2_6", help="huggingface model name or local path")
@@ -36,7 +37,7 @@ model_path = args.model
 if args.multi_gpus:
     from accelerate import load_checkpoint_and_dispatch, init_empty_weights, infer_auto_device_map
     with init_empty_weights():
-        model = AutoModel.from_pretrained(model_path, trust_remote_code=True, attn_implementation='sdpa', torch_dtype=torch.bfloat16,
+        model = AutoModel.from_pretrained(model_path,  cache_dir=cache_dir,trust_remote_code=True, attn_implementation='sdpa', torch_dtype=torch.bfloat16,
             init_audio=False, init_tts=False)
     device_map = infer_auto_device_map(model, max_memory={0: "10GB", 1: "10GB"},
         no_split_module_classes=['SiglipVisionTransformer', 'Qwen2DecoderLayer'])
@@ -58,7 +59,7 @@ if args.multi_gpus:
 
     model = load_checkpoint_and_dispatch(model, model_path, dtype=torch.bfloat16, device_map=device_map)
 else:
-    model = AutoModel.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.bfloat16, init_audio=False, init_tts=False)
+    model = AutoModel.from_pretrained(model_path,  cache_dir=cache_dir,trust_remote_code=True, torch_dtype=torch.bfloat16, init_audio=False, init_tts=False)
     model = model.to(device=device)
 
 tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)

@@ -56,8 +56,14 @@ logger = setup_logger()
 ap = argparse.ArgumentParser()
 ap.add_argument('--port', type=int , default=32550)
 ap.add_argument('--model', type=str , default="openbmb/MiniCPM-o-2_6", help="huggingface model name or local path")
+
+# 修改模型路径，指向int4的量化模型
+#ap.add_argument('--model', type=str , default="openbmb/MiniCPM-o-2_6-int4", help="huggingface model name or local path")
+
 args = ap.parse_args()
 
+# 指定缓存路径
+cache_dir = r"F:\ai_wk\models"
 
 class StreamManager:
     def __init__(self):
@@ -93,8 +99,8 @@ class StreamManager:
         self.minicpmo_model_path = args.model #"openbmb/MiniCPM-o-2_6"
         self.model_version = "2.6"
         with torch.no_grad():
-            self.minicpmo_model = AutoModel.from_pretrained(self.minicpmo_model_path, trust_remote_code=True, torch_dtype=self.target_dtype, attn_implementation='sdpa')
-        self.minicpmo_tokenizer = AutoTokenizer.from_pretrained(self.minicpmo_model_path, trust_remote_code=True)
+            self.minicpmo_model = AutoModel.from_pretrained(self.minicpmo_model_path,  cache_dir=cache_dir, trust_remote_code=True, torch_dtype=self.target_dtype, attn_implementation='sdpa')
+        self.minicpmo_tokenizer = AutoTokenizer.from_pretrained(self.minicpmo_model_path, cache_dir=cache_dir, trust_remote_code=True)
         self.minicpmo_model.init_tts()
         # self.minicpmo_model.tts.float()
         self.minicpmo_model.to(self.device).eval()

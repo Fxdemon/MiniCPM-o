@@ -57,10 +57,11 @@ export default defineConfig({
         }
     },
     server: {
-        https: {
+        https: false, // 关闭 HTTPS
+        /*https: {
             key: fs.readFileSync(path.resolve(__dirname, 'key.pem')),
             cert: fs.readFileSync(path.resolve(__dirname, 'cert.pem')),
-        },
+        },*/
         host: '0.0.0.0',
         port: 8088,
         proxy: {
